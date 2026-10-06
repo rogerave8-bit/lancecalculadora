@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Lance de Leilão</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    /* Fundo discreto e confortável para os olhos em tons escuros e sóbrios */
+    body {
+      background: linear-gradient(135deg, #111827, #1f2937, #111827);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: #334155;
+    }
+
+    .calculator-card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 440px;
+      border-radius: 20px;
+      padding: 36px 28px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .header h1 {
+      font-size: 1.75rem;
+      color: #0f172a;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .header p {
+      font-size: 0.95rem;
+      color: #475569;
+      margin-top: 6px;
+      font-weight: 600;
+    }
+
+    .input-group {
+      margin-bottom: 28px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .input-wrapper {
+      display: flex;
+      align-items: center;
+      border: 2px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 4px 16px;
+      background-color: #f8fafc;
+      transition: all 0.2s ease;
+    }
+
+    .input-wrapper:focus-within {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+      background-color: #ffffff;
+    }
+
+    .currency-symbol {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #64748b;
+      margin-right: 8px;
+    }
+
+    .input-wrapper input {
+      width: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #0f172a;
+      padding: 10px 0;
+    }
+
+    .suffix {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #1d4ed8;
+      background-color: #dbeafe;
+      padding: 6px 14px;
+      border-radius: 8px;
+      margin-left: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .results-container {
+      background-color: #f1f5f9;
+      border-radius: 14px;
+      padding: 20px 22px;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 1rem;
+      color: #475569;
+      font-weight: 600;
+    }
+
+    .result-row .value {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    /* Destaque Exclusivo e Centralizado para o Total com 10% */
+    .result-row.highlight-total {
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background-color: #f0fdf4;
+      border: 3px solid #16a34a; /* Borda mais destacada */
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin: 12px 0;
+      box-shadow: 0 10px 15px -3px rgba(22, 163, 74, 0.15), 0 4px 6px -4px rgba(22, 163, 74, 0.1);
+      gap: 4px;
+    }
+
+    .result-row.highlight-total .label-total {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #166534;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .result-row.highlight-total .value {
+      font-size: 2.1rem;
+      font-weight: 900;
+      color: #15803d;
+      line-height: 1.2;
+    }
+
+    /* Estilo para a nova cobertura (Para Superar) */
+    .result-row.superar {
+      padding-top: 8px;
+      border-top: 1px solid #cbd5e1;
+      color: #dc2626;
+    }
+
+    .result-row.superar .label-superar {
+      font-size: 1.05rem;
+      font-weight: 800;
+    }
+
+    .result-row.superar .value {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #dc2626;
+    }
+
+    /* Estilos para os lances subsequentes em amarelo */
+    .proximos-lances {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-top: 4px;
+    }
+
+    .result-row.lance-amarelo {
+      padding: 2px 0;
+      font-size: 0.85rem;
+      color: #854d0e;
+      font-weight: 700;
+    }
+
+    .result-row.lance-amarelo .value {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #a16207;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="calculator-card">
+    <div class="header">
+      <h1>Calculadora de Leilão</h1>
+      <p>Cálculo automático (+10%)</p>
+    </div>
+
+    <div class="input-group">
+      <label for="lanceInput">Valor do Lance Base</label>
+      <div class="input-wrapper">
+        <span class="currency-symbol">R$</span>
+        <input 
+          type="number" 
+          id="lanceInput" 
+          step="any"
+          oninput="calcularTotal()"
+          autofocus
+        >
+        <span class="suffix">Mil</span>
+      </div>
+    </div>
+
+    <div class="results-container">
+      <div class="result-row">
+        <span>Lance Base:</span>
+        <span class="value" id="lanceBaseDisplay">R$ 0,00</span>
+      </div>
+      <div class="result-row">
+        <span>Taxa/Comissão (+10%):</span>
+        <span class="value" id="taxaDisplay">R$ 0,00</span>
+      </div>
+      
+      <!-- Linha Destacada com caixa e borda verde centralizada -->
+      <div class="result-row highlight-total">
+        <span class="label-total">Total com 10%</span>
+        <span class="value" id="totalDisplay">R$ 0,00</span>
+      </div>
+
+      <div class="result-row superar">
+        <span class="label-superar">Para Superar (+10%):</span>
+        <span class="value" id="superarDisplay">R$ 0,00</span>
+      </div>
+
+      <!-- Novas linhas para os 3 lances seguintes em amarelo e menores -->
+      <div class="proximos-lances">
+        <div class="result-row lance-amarelo">
+          <span>+ 2º Lance (+10%):</span>
+          <span class="value" id="lance2Display">R$ 0,00</span>
+        </div>
+        <div class="result-row lance-amarelo">
+          <span>+ 3º Lance (+10%):</span>
+          <span class="value" id="lance3Display">R$ 0,00</span>
+        </div>
+        <div class="result-row lance-amarelo">
+          <span>+ 4º Lance (+10%):</span>
+          <span class="value" id="lance4Display">R$ 0,00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function calcularTotal() {
+      const inputVal = parseFloat(document.getElementById('lanceInput').value);
+      
+      const lanceBaseDisplay = document.getElementById('lanceBaseDisplay');
+      const taxaDisplay = document.getElementById('taxaDisplay');
+      const totalDisplay = document.getElementById('totalDisplay');
+      const superarDisplay = document.getElementById('superarDisplay');
+      const lance2Display = document.getElementById('lance2Display');
+      const lance3Display = document.getElementById('lance3Display');
+      const lance4Display = document.getElementById('lance4Display');
+
+      if (isNaN(inputVal) || inputVal <= 0) {
+        lanceBaseDisplay.textContent = 'R$ 0,00';
+        taxaDisplay.textContent = 'R$ 0,00';
+        totalDisplay.textContent = 'R$ 0,00';
+        superarDisplay.textContent = 'R$ 0,00';
+        lance2Display.textContent = 'R$ 0,00';
+        lance3Display.textContent = 'R$ 0,00';
+        lance4Display.textContent = 'R$ 0,00';
+        return;
+      }
+
+      const valorBase = inputVal * 1000;
+      const taxa = valorBase * 0.10;
+      const total = valorBase + taxa;
+      
+      // Cálculo progressivo (+10% sobre cada lance anterior)
+      const valorSuperar = total * 1.10; // 1º Lance para superar
+      const lance2 = valorSuperar * 1.10; // 2º Lance
+      const lance3 = lance2 * 1.10;        // 3º Lance
+      const lance4 = lance3 * 1.10;        // 4º Lance
+
+      const formatarMoeda = (val) => {
+        return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      };
+
+      lanceBaseDisplay.textContent = formatarMoeda(valorBase);
+      taxaDisplay.textContent = formatarMoeda(taxa);
+      totalDisplay.textContent = formatarMoeda(total);
+      superarDisplay.textContent = formatarMoeda(valorSuperar);
+      lance2Display.textContent = formatarMoeda(lance2);
+      lance3Display.textContent = formatarMoeda(lance3);
+      lance4Display.textContent = formatarMoeda(lance4);
+    }
+  </script>
+
+</body>
+</html>
